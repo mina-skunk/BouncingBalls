@@ -10,5 +10,19 @@
     <string name="action_quit">Quit</string>
     <string name="msg_about">About dialog body</string>
     <string name="msg_help">Help dialog body</string>
+    
+    <!-- slider test -->
+<string name="slider_title">Temperature</string>
+<string-array name="slider_summaries">
+    <!-- You can define as many summaries as you'd like -->
+    <!-- The active summary will reflect the preference's current value -->
+    <item>Freezing</item> <!-- 0.00 to 0.25 -->
+    <item>Chilly</item>   <!-- 0.25 to 0.50 -->
+    <item>Warm</item>     <!-- 0.50 to 0.75 -->
+    <item>Boiling</item>  <!-- 0.75 to 1.00 -->
+</string-array>
+<item name="slider_default" format="float" type="string">0.5</item>
+<string name="slider_message">Optional message displayed in the dialog above the slider</string>
+<!-- slider test -->
 
 </resources>

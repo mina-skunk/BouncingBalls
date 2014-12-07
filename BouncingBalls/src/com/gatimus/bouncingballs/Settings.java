@@ -1,4 +1,4 @@
-package com.example.bouncingballs;
+package com.gatimus.bouncingballs;
 
 import android.app.FragmentManager;
 import android.os.Bundle;

@@ -1,4 +1,4 @@
-package com.example.bouncingballs;
+package com.gatimus.bouncingballs;
 
 import android.app.Activity;
 import android.app.DialogFragment;
@@ -42,7 +42,7 @@ public class Main extends Activity {
 		int id = item.getItemId();
 		switch(id){
 		case R.id.action_settings :
-			Intent intent = new Intent(this, Settings.class);
+			Intent intent = new Intent(Main.this, Settings.class);
             startActivity(intent);
 			break;
 		case R.id.action_about :

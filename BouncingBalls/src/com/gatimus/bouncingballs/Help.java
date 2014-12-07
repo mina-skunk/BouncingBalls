@@ -1,4 +1,4 @@
-package com.example.bouncingballs;
+package com.gatimus.bouncingballs;
 
 import android.app.AlertDialog.Builder;
 import android.app.Dialog;

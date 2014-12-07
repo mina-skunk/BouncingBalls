@@ -1,4 +1,4 @@
-package com.example.bouncingballs;
+package com.gatimus.bouncingballs;
 
 import android.app.Activity;
 import android.content.Intent;
