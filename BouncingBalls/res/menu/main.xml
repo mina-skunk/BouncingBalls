@@ -4,8 +4,27 @@
 
     <item
         android:id="@+id/action_settings"
-        android:orderInCategory="100"
-        android:showAsAction="never"
-        android:title="@string/action_settings"/>
+        android:orderInCategory="1"
+        android:title="@string/action_settings"
+        android:visible="true"
+        android:enabled="true"/>
+    <item
+        android:id="@+id/action_about"
+        android:orderInCategory="2"
+        android:title="@string/action_about"
+        android:visible="true"
+        android:enabled="true"/>
+    <item
+        android:id="@+id/action_help"
+        android:orderInCategory="3"
+        android:title="@string/action_help"
+        android:visible="true"
+        android:enabled="true"/>
+    <item
+        android:id="@+id/action_quit"
+        android:orderInCategory="4"
+        android:title="@string/action_quit"
+        android:visible="true"
+        android:enabled="true"/>
 
 </menu>
