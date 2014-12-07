@@ -19,7 +19,7 @@ public class Settings extends PreferenceActivity {
 		fragMan.beginTransaction().replace(android.R.id.content, new SettingsFragment()).commit();
 	} //onCreate
 	
-	protected class SettingsFragment extends PreferenceFragment {
+	public class SettingsFragment extends PreferenceFragment {
 		
 		@Override
 		public void onCreate(Bundle savedInstanceState) {

@@ -3,12 +3,17 @@ package com.gatimus.bouncingballs;
 import android.app.Activity;
 import android.app.DialogFragment;
 import android.app.FragmentManager;
+import android.content.Context;
 import android.content.Intent;
 import android.content.res.Resources;
+import android.graphics.Canvas;
+import android.graphics.Color;
+import android.graphics.Paint;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.View;
 
 public class Main extends Activity {
 	
@@ -22,7 +27,7 @@ public class Main extends Activity {
 	protected void onCreate(Bundle savedInstanceState) {
 		Log.i(TAG, "Create");
 		super.onCreate(savedInstanceState);
-		setContentView(R.layout.activity_main);
+		setContentView(new MyView(this));
 		res = getApplicationContext().getResources();
 		fragMan = this.getFragmentManager();
 		about = new About();
@@ -58,5 +63,29 @@ public class Main extends Activity {
 		}
 		return super.onOptionsItemSelected(item);
 	} //onOptionsItemSelected
+	
+	public class MyView extends View {
+        public MyView(Context context) {
+             super(context);
+             // TODO Auto-generated constructor stub
+        }
+
+        @Override
+        protected void onDraw(Canvas canvas) {
+           // TODO Auto-generated method stub
+           super.onDraw(canvas);
+           int x = getWidth();
+           int y = getHeight();
+           int radius;
+           radius = 100;
+           Paint paint = new Paint();
+           paint.setStyle(Paint.Style.FILL);
+           paint.setColor(Color.WHITE);
+           canvas.drawPaint(paint);
+           // Use Color.parseColor to define HTML colors
+           paint.setColor(Color.parseColor("#CD5C5C"));
+           canvas.drawCircle(x / 2, y / 2, radius, paint);
+       }
+    }
 	
 } //class
