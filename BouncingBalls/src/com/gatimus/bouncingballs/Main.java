@@ -9,7 +9,9 @@ import android.content.res.Resources;
 import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
+import android.graphics.PointF;
 import android.os.Bundle;
+import android.os.Handler;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -22,12 +24,14 @@ public class Main extends Activity {
 	private FragmentManager fragMan;
 	private DialogFragment about;
 	private DialogFragment help;
+	private View view;
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		Log.i(TAG, "Create");
 		super.onCreate(savedInstanceState);
-		setContentView(new MyView(this));
+		view = new MyView(this);
+		setContentView(view);
 		res = getApplicationContext().getResources();
 		fragMan = this.getFragmentManager();
 		about = new About();
@@ -65,27 +69,64 @@ public class Main extends Activity {
 	} //onOptionsItemSelected
 	
 	public class MyView extends View {
+		
+		private static final int FRAME_TIME = 17;
+		private Handler handler;
+		private Runnable run;
+		private PointF position;
+		private PointF viewSize;
+		private int radius;
+		private int deltaY;
+		private int deltaX;
+		private Paint bg;
+		private Paint color;
+		
         public MyView(Context context) {
              super(context);
-             // TODO Auto-generated constructor stub
-        }
+             handler = new Handler();
+             radius = 100;
+             deltaY = 50;
+             deltaX = 50;
+             bg = new Paint();
+             bg.setStyle(Paint.Style.FILL);
+             bg.setColor(Color.WHITE);
+             color = new Paint();
+             color.setStyle(Paint.Style.FILL);
+             color.setColor(Color.RED);
+             
+             run = new Runnable(){
+				@Override
+				public void run() {
+					if(position.y + radius >= viewSize.y || position.y - radius <= 0){
+						deltaY = deltaY * -1;
+					}
+					if(position.x + radius >= viewSize.x || position.x - radius <= 0){
+						deltaX = deltaX * -1;
+					}
+					position.y = position.y + deltaY;
+					position.x = position.x + deltaX;
+					Log.v("Update:", "Position");
+					invalidate();
+				} //run()
+             }; //run
+        } //constructor
 
         @Override
         protected void onDraw(Canvas canvas) {
-           // TODO Auto-generated method stub
            super.onDraw(canvas);
-           int x = getWidth();
-           int y = getHeight();
-           int radius;
-           radius = 100;
-           Paint paint = new Paint();
-           paint.setStyle(Paint.Style.FILL);
-           paint.setColor(Color.WHITE);
-           canvas.drawPaint(paint);
-           // Use Color.parseColor to define HTML colors
-           paint.setColor(Color.parseColor("#CD5C5C"));
-           canvas.drawCircle(x / 2, y / 2, radius, paint);
+           canvas.drawPaint(bg);
+           canvas.drawCircle(position.x, position.y, radius, color);
+           Log.v("Canvas:", "Draw");
+           handler.postDelayed(run, FRAME_TIME);
        }
-    }
+        
+        @Override 
+        protected void onMeasure(int widthMeasureSpec, int heightMeasureSpec){
+        	viewSize = new PointF(MeasureSpec.getSize(widthMeasureSpec), MeasureSpec.getSize(heightMeasureSpec));
+        	position = new PointF(viewSize.x/2, viewSize.y /2);
+        	super.onMeasure(widthMeasureSpec, heightMeasureSpec);
+        }
+        
+    } //inner class
 	
 } //class
