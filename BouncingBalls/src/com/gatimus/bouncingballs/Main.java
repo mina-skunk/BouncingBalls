@@ -1,5 +1,7 @@
 package com.gatimus.bouncingballs;
 
+import java.util.ArrayList;
+
 import android.app.Activity;
 import android.app.DialogFragment;
 import android.app.FragmentManager;
@@ -16,6 +18,9 @@ import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+
+import com.gatimus.bouncingballs.point.PointCartesian;
+import com.gatimus.bouncingballs.point.PointCylindrical;
 
 public class Main extends Activity {
 	
@@ -105,10 +110,10 @@ public class Main extends Activity {
 					if(radius >= 100 || radius <= 50){
 						deltaZ = deltaZ * -1;
 					}
-					if(position.y + radius >= viewSize.y || position.y - radius <= 0){
+					if(position.y + radius >= viewSize.y || position.y - radius <= 2){
 						deltaY = deltaY * -1;
 					}
-					if(position.x + radius >= viewSize.x || position.x - radius <= 0){
+					if(position.x + radius >= viewSize.x || position.x - radius <= 2){
 						deltaX = deltaX * -1;
 					}
 					position.y = position.y + deltaY;
@@ -150,10 +155,7 @@ public class DView extends View {
 		private PointF viewSize;
 		private Paint bg;
 		private Paint color;
-		private PointF topLeft;
-		private PointF topRight;
-		private PointF bottomRight;
-		private PointF bottomLeft;
+		private ArrayList<PointCartesian> points;
 		
         public DView(Context context) {
              super(context);
@@ -164,10 +166,22 @@ public class DView extends View {
              color = new Paint();
              color.setStyle(Paint.Style.FILL_AND_STROKE);
              color.setColor(Color.RED);
+             points = new ArrayList<PointCartesian>();
+             points.add(new PointCartesian(-100, -100, 100));
+             points.add(new PointCartesian(100, -100, 100));
+             points.add(new PointCartesian(100, 100, 100));
+             points.add(new PointCartesian(-100, 100, 100));
+             points.add(new PointCartesian(-100, -100, 0));
+             points.add(new PointCartesian(100, -100, 0));
+             points.add(new PointCartesian(100, 100, 0));
+             points.add(new PointCartesian(-100, 100, 0));
              run = new Runnable(){
 				@Override
 				public void run() {
-
+					
+					points = cylindricalTheta(points, 0.1F);
+					
+					
 					Log.v("Update:", "Position");
 					invalidate();
 				} //run()
@@ -178,13 +192,10 @@ public class DView extends View {
         protected void onDraw(Canvas canvas) {
            super.onDraw(canvas);
            canvas.drawPaint(bg);
-           float[] pts = new float[]{
-        		   topLeft.x, topLeft.y, topRight.x, topRight.y,
-        		   topRight.x, topRight.y, bottomRight.x, bottomRight.y,
-        		   bottomRight.x, bottomRight.y, bottomLeft.x, bottomLeft.y,
-        		   bottomLeft.x, bottomLeft.y, topLeft.x, topLeft.y
-		   };
-           canvas.drawLines(pts, color);
+           for(PointCartesian point : points){
+        	   canvas.drawCircle(point.x+zeroPosition.x, point.y+zeroPosition.y, 10, color);
+           }
+           
            Log.v("Canvas:", "Draw");
            //handler.postDelayed(run, FRAME_TIME);
        }
@@ -193,11 +204,18 @@ public class DView extends View {
         protected void onMeasure(int widthMeasureSpec, int heightMeasureSpec){
         	viewSize = new PointF(MeasureSpec.getSize(widthMeasureSpec), MeasureSpec.getSize(heightMeasureSpec));
         	zeroPosition = new PointF(viewSize.x/2, viewSize.y /2);
-        	topLeft = new PointF(zeroPosition.x-100, zeroPosition.y-100);
-    		topRight = new PointF(zeroPosition.x+100, zeroPosition.y-100);
-    		bottomRight = new PointF(zeroPosition.x+100, zeroPosition.y+100);
-    		bottomLeft = new PointF(zeroPosition.x-100, zeroPosition.y+100);
         	super.onMeasure(widthMeasureSpec, heightMeasureSpec);
+        	Log.v("Canvas:", "Measure");
+        }
+        
+        public ArrayList<PointCartesian> cylindricalTheta(ArrayList<PointCartesian> list, float amount){
+        	ArrayList<PointCartesian> rList = new ArrayList<PointCartesian>();
+        	for(PointCartesian point : list){
+        		PointCylindrical cPoint = new PointCylindrical(point);
+        		cPoint.theta = (float)cPoint.theta + amount;
+        		rList.add(new PointCartesian(cPoint));
+        	}
+        	return rList;
         }
         
     } //inner class
