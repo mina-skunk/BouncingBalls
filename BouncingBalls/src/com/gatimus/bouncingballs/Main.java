@@ -11,16 +11,19 @@ import android.content.res.Resources;
 import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
+import android.graphics.Path;
 import android.graphics.PointF;
 import android.os.Bundle;
 import android.os.Handler;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.MotionEvent;
 import android.view.View;
 
 import com.gatimus.bouncingballs.point.PointCartesian;
 import com.gatimus.bouncingballs.point.PointCylindrical;
+import com.gatimus.bouncingballs.point.PointSpherical;
 
 public class Main extends Activity {
 	
@@ -30,6 +33,7 @@ public class Main extends Activity {
 	private DialogFragment about;
 	private DialogFragment help;
 	private View view;
+	
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -156,6 +160,9 @@ public class DView extends View {
 		private Paint bg;
 		private Paint color;
 		private ArrayList<PointCartesian> points;
+		private ArrayList<PointCartesian> newPoints;
+		private String displayX = "0";
+		private String displayY = "0";
 		
         public DView(Context context) {
              super(context);
@@ -164,22 +171,27 @@ public class DView extends View {
              bg.setStyle(Paint.Style.FILL);
              bg.setColor(Color.WHITE);
              color = new Paint();
-             color.setStyle(Paint.Style.FILL_AND_STROKE);
+             color.setStyle(Paint.Style.STROKE);
              color.setColor(Color.RED);
+             
              points = new ArrayList<PointCartesian>();
-             points.add(new PointCartesian(-100, -100, 100));
-             points.add(new PointCartesian(100, -100, 100));
-             points.add(new PointCartesian(100, 100, 100));
-             points.add(new PointCartesian(-100, 100, 100));
-             points.add(new PointCartesian(-100, -100, 0));
-             points.add(new PointCartesian(100, -100, 0));
-             points.add(new PointCartesian(100, 100, 0));
-             points.add(new PointCartesian(-100, 100, 0));
+             points.add(new PointCartesian(-150, -150, 150));
+             points.add(new PointCartesian(150, -150, 150));
+             points.add(new PointCartesian(150, 150, 150));
+             points.add(new PointCartesian(-150, 150, 150));
+             points.add(new PointCartesian(-150, -150, -150));
+             points.add(new PointCartesian(150, -150, -150));
+             points.add(new PointCartesian(150, 150, -150));
+             points.add(new PointCartesian(-150, 150, -150));
+             newPoints = points;
+             
+          
+             
              run = new Runnable(){
 				@Override
 				public void run() {
 					
-					points = cylindricalTheta(points, 0.1F);
+					//points = cylindricalTheta(points, 0.01F);
 					
 					
 					Log.v("Update:", "Position");
@@ -192,10 +204,53 @@ public class DView extends View {
         protected void onDraw(Canvas canvas) {
            super.onDraw(canvas);
            canvas.drawPaint(bg);
-           for(PointCartesian point : points){
-        	   canvas.drawCircle(point.x+zeroPosition.x, point.y+zeroPosition.y, 10, color);
+           Paint paint = new Paint();
+           paint.setStyle(Paint.Style.STROKE);
+           float[] pts = new float[16];
+           int i = 0;
+           int it = 0;
+           for(PointCartesian point : newPoints){
+        	   int r = (int)point.x + (int)zeroPosition.x;
+        	   int g = (int)point.y + (int)zeroPosition.y;
+        	   int b = (int)point.z + 150;
+        	   r = r/((int)viewSize.x/255);
+        	   g = g/((int)viewSize.y/255);
+        	   b = b/(300/255);
+        	   paint.setColor(Color.rgb(r, g, b));
+        	   canvas.drawCircle(
+        			   point.x*((float)Math.pow(3, point.y/1000))+zeroPosition.x,
+        			   point.z*((float)Math.pow(3, point.y/1000))+zeroPosition.y,
+        			   10*((float)Math.pow(3, point.y/1000)),
+        			   paint
+			   );
+        	   pts[i] = point.x*((float)Math.pow(3, point.y/1000))+zeroPosition.x;
+        	   pts[++i] = point.z*((float)Math.pow(3, point.y/1000))+zeroPosition.y;
+        	   i++;
            }
+           Path path = new Path();
+           path.setFillType(Path.FillType.WINDING);
+           path.moveTo(pts[0], pts[1]);
+           path.lineTo(pts[2], pts[3]);
+           path.lineTo(pts[4], pts[5]);
+           path.lineTo(pts[6], pts[7]);
+           path.lineTo(pts[0], pts[1]);
+           path.lineTo(pts[8], pts[9]);
+           path.lineTo(pts[10], pts[11]);
+           path.lineTo(pts[12], pts[13]);
+           path.lineTo(pts[14], pts[15]);
+           path.lineTo(pts[8], pts[9]);
+           path.moveTo(pts[2], pts[3]);
+           path.lineTo(pts[10], pts[11]);
+           path.moveTo(pts[4], pts[5]);
+           path.lineTo(pts[12], pts[13]);
+           path.moveTo(pts[6], pts[7]);
+           path.lineTo(pts[14], pts[15]);
+           canvas.drawPath(path, color);
            
+
+		   
+           canvas.drawText(displayX, 5, 10, color);
+           canvas.drawText(displayY, 5, 20, color);
            Log.v("Canvas:", "Draw");
            //handler.postDelayed(run, FRAME_TIME);
        }
@@ -208,16 +263,39 @@ public class DView extends View {
         	Log.v("Canvas:", "Measure");
         }
         
-        public ArrayList<PointCartesian> cylindricalTheta(ArrayList<PointCartesian> list, float amount){
+        public ArrayList<PointCartesian> cylindricalTheta(ArrayList<PointCartesian> list, float amountX, float amountY){
         	ArrayList<PointCartesian> rList = new ArrayList<PointCartesian>();
         	for(PointCartesian point : list){
         		PointCylindrical cPoint = new PointCylindrical(point);
-        		cPoint.theta = (float)cPoint.theta + amount;
+        		cPoint.theta = (float)cPoint.theta + amountX;
+        		cPoint.r = (float)cPoint.r + amountY;
         		rList.add(new PointCartesian(cPoint));
         	}
         	return rList;
         }
+
+        
+        @Override
+        public boolean onTouchEvent(MotionEvent e) {
+        	float amountX = e.getX() - zeroPosition.x;
+        	float amountY = e.getY() - zeroPosition.y;
+        	//float amountX = 0;
+        	//float amountY = 0;
+        	displayX = String.valueOf(amountX);
+        	displayY = String.valueOf(amountY);
+        	if(e.getAction() == MotionEvent.ACTION_MOVE || e.getAction() == MotionEvent.ACTION_DOWN){
+        		amountX = amountX/100*-1;
+        		amountY = amountY*-1;
+        		newPoints = cylindricalTheta(points, amountX, amountY);
+        	}
+        	invalidate();
+        	Log.v("Update:", "Position");
+        	return true;
+        }
+        
         
     } //inner class
+
+
 	
 } //class

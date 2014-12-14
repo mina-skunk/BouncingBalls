@@ -6,6 +6,12 @@ public class PointCylindrical {
 	public float theta;
 	public float h;
 	
+	public PointCylindrical(float r, float theta, float h){
+		this.r = r;
+		this.theta = theta;
+		this.h = h;
+	}
+	
 	public PointCylindrical(PointCartesian pointCartesian){
 		this.r = (float)Math.sqrt(Math.pow(pointCartesian.x, 2)+Math.pow(pointCartesian.y, 2));
 		if(pointCartesian.x==0 && pointCartesian.y==0){

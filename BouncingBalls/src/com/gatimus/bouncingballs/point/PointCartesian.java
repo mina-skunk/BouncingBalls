@@ -6,6 +6,11 @@ import android.graphics.PointF;
 public class PointCartesian extends PointF{
 	
 	public float z;
+	
+	public PointCartesian(PointF point, float z) {
+		super(point.x, point.y);
+		this.z = z;
+	}
 
 	public PointCartesian(float x, float y, float z) {
 		super(x, y);
